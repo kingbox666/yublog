@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head  th:replace="admin/_fragments :: head(~{::title})">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>后台管理页</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+    <link rel="stylesheet" href="../../static/css/me.css">
+    <!-- 引入组件库 -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+</head>
+<body>
+<!--导航-->
+<nav   class="ui inverted attached segment m-padded-tb-mini m-shadow-small">
+    <div class="ui container">
+        <div class="ui inverted secondary stackable menu">
+            <h2 class="ui teal header item">后台管理</h2>
+            <a href="#" th:href="@{/admin/blogs}"  class="m-item item m-mobile-hide"><i class="mine home icon"></i>博客</a>
+            <a href="#" th:href="@{/admin/types}" class="m-item item m-mobile-hide"><i class="mine idea icon"></i>分类</a>
+            <a href="#" th:href="@{/admin/tag}" class="m-item item m-mobile-hide"><i class="mine tags icon"></i>标签</a>
+            <a href="#" th:href="@{/back}" class="m-item item m-mobile-hide" ><i class="mine sign in alternate icon"></i>返回博客页面</a>
+            <div class="right item m-mobile-hide">
+                <div class="ui dropdown item m-item m-mobile-hide">
+                    <div class="text">
+                        <img src="../static/images/xtx.png" th:src="@{/images/xtx.png}" alt="" class="ui small centered circular image" >
+                        黄思强
+                    </div>
+                    <i class="dropdown icon"></i>
+                    <div class="menu">
+                        <a href="#" th:href="@{/logout}" class="item" >注销</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="#" class="ui menu toggle black icon button m-top-right m-mobile-show">
+        <i class="sidebar icon"></i>
+    </a>
+
+</nav>
+
+
+
+<!--中间内容-->
+<div class= " attached  m-container-small m-padded-tb-big">
+
+        <div class="ui container">
+            <div class="ui success large message">
+               <h2>Hi</h2>
+                <p>管理员，欢迎登录！</p>
+            </div>
+        </div>
+    <br>
+    <img src="../static/images/lufei.png" alt="" class="ui centered  rounded image" style="width: 1127px;height: 900px;" th:src="@{/images/lufei.png}">
+
+</div>
+
+
+<!--底部footer-->
+<footer th:replace="admin/_fragments :: footer" class="ui inverted vertical segment m-padded-tb-massive">
+
+</footer>
+
+<script>
+    $('.menu.toggle').click(function () {
+        $('.m-item').toggleClass('m-mobile-hide');
+    });
+    $('.ui.dropdown').dropdown({
+        on :'hover'
+    });
+</script>
+
+</body>
+</html>

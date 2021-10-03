@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunblog.mapper.BlogMapper" >
+
+    <insert id="saveBlog"  useGeneratedKeys="true" keyProperty="id">
+        insert into yunblog.t_blog(id,title,content,first_picture,
+                           flag,view,description,appreciation,share_statement,commentabled,published,
+                           recommend,create_time,update_time,type_id,user_id,tag_ids)
+                           values (#{id},#{title},#{content},#{firstPicture},#{flag},#{view},
+                           #{description},#{appreciation},#{shareStatement},
+                        #{commentabled},#{published},#{recommend},#{createTime},#{updateTime},#{type.id},#{user.id},#{tagIds})
+    </insert>
+
+
+    <select id="getAllBlog" resultType="Blog">
+        select * from yunblog.t_blog
+    </select>
+
+    <resultMap id="blog" type="com.yunblog.entiy.BlogQuery">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="recommend" column="recommend"/>
+        <result property="published" column="published"/>
+        <result property="typeId" column="type_id"/>
+        <result property="description" column="description"/>
+        <association property="type" javaType="com.yunblog.entiy.Type">
+            <id property="id" column="id"/>
+            <result property="name" column="name"/>
+        </association>
+    </resultMap>
+
+
+    <select id="getAllBlogQuery" resultMap="blog">
+        select b.id,b.title,b.update_time,b.recommend,b.published,b.description,b.type_id,t.id,t.name from yunblog.t_blog b left outer join
+        yunblog.t_type t on b.type_id = t.id  order by update_time DESC
+    </select>
+
+    <update id="updateBlog" parameterType="Blog">
+        update yunblog.t_blog
+        set title = #{title},content = #{content},
+            first_picture=#{firstPicture},description=#{description},
+            flag = #{flag},view = #{view},appreciation=#{appreciation},share_statement=#{shareStatement},
+            commentabled=#{commentabled},published=#{published},recommend=#{recommend},create_time=#{createTime},
+            update_time=#{updateTime},type_id=#{type.id},user_id=#{user.id},tag_ids=#{tagIds} where id = #{id};
+
+    </update>
+
+    <delete id="deleteBlog" parameterType="Long">
+        delete from yunblog.t_blog where id=#{id}
+    </delete>
+
+    <select id="searchByTitleOrTypeOrRecommend" parameterType="com.yunblog.entiy.SearchBlog" resultMap="blog">
+        select b.id,b.title,b.update_time,b.recommend,b.published,b.type_id,t.id,t.name from yunblog.t_blog b ,yunblog.t_type t
+            <where>
+                <if test="1 == 1">
+                    b.type_id = t.id
+                </if>
+                <if test="title != null and title != ''">
+                    and title like concat('%',#{title},'%')
+                </if>
+
+                <if test="recommend != null and recommend != ''">
+                    and recommend = #{recommend}
+                </if>
+
+                <if test="typeId != null and typeId != ''">
+                    and type_id = #{typeId}
+                </if>
+            </where>
+    </select>
+
+    <select id="getBlogByID" parameterType="long" resultMap="BlogMap">
+        select b.id,b.title,b.content,b.first_picture,
+               b.flag,b.view,b.description,b.appreciation,b.share_statement,b.commentabled,b.published,
+               b.recommend, b.create_time ,b.update_time
+                ,b.type_id,b.user_id,b.tag_ids from yunblog.t_user u,yunblog.t_type t, yunblog.t_blog b
+        where b.user_id=u.id and b.type_id=t.id and b.id=#{id}
+    </select>
+
+    <resultMap id="BlogMap" type="Blog">
+    <result property="id" column="id"/>
+    <result property="title" column="title"/>
+    <result property="content" column="content"/>
+    <result property="firstPicture" column="first_picture"/>
+    <result property="flag" column="flag"/>
+    <result property="view" column="view"/>
+    <result property="appreciation" column="appreciation"/>
+    <result property="shareStatement" column="share_statement"/>
+    <result property="commentabled" column="commentabled"/>
+    <result property="published" column="published"/>
+    <result property="recommend" column="recommend"/>
+    <result property="createTime" column="create_time"/>
+    <result property="updateTime" column="update_time"/>
+    <result property="description" column="description"/>
+
+
+    <association property="type" column="type_id" javaType="Type" select="getType">
+        <result property="name" column="tname"/>
+    </association>
+        <association property="user" column="user_id" javaType="User" select="getUser">
+            <result property="name" column="tname"/>
+        </association>
+    </resultMap>
+
+    <select id="getType" resultType="Type">
+        select * from yunblog.t_type where id=#{id};
+    </select>
+
+    <select id="getUser" resultType="User">
+        select * from yunblog.t_user where id=#{id};
+    </select>
+    <!--给前端页面显示的博客文章:已发布的-->
+    <select id="listBlogIndex" resultMap="BlogMap">
+        select id,title,content,first_picture,
+        flag,view,description,appreciation,share_statement,commentabled,published,
+        recommend, create_time ,update_time
+        ,type_id,user_id from yunblog.t_blog
+        <where>
+            and published = true
+            <if test="title != null and title != ''">
+                and title like concat('%',#{title},'%')
+            </if>
+
+            <if test="recommend != null and recommend != ''">
+                and recommend = #{recommend}
+            </if>
+
+            <if test="typeId != null and typeId != ''">
+                and type_id = #{typeId}
+            </if>
+
+        </where>
+        order by update_time DESC
+    </select>
+
+
+    <!--给前端页面显示的博客文章:热门的前五-->
+    <select id="listBlogIndexHot" resultMap="BlogMap">
+        select id,title,content,first_picture,
+        flag,view,description,appreciation,share_statement,commentabled,published,
+        recommend, create_time ,update_time
+        ,type_id,user_id from yunblog.t_blog
+        <where>
+            and published = true
+        </where>
+        order by view DESC limit 0,5
+    </select>
+
+    <!--给前端页面显示的查询的分类博客文章-->
+    <select id="listBlogType" resultMap="BlogMap">
+        select id,title,content,first_picture,
+               flag,view,description,appreciation,share_statement,commentabled,published,
+               recommend, create_time ,update_time
+                ,type_id,user_id from yunblog.t_blog
+        <where>
+        and type_id = #{typeId}
+        </where>
+    </select>
+
+    <resultMap id="BlogQueryMap" type="com.yunblog.entiy.BlogQuery">
+        <association property="type" column="type_id" javaType="Type" select="getType">
+            <result property="name" column="tname"/>
+        </association>
+        <association property="user" column="user_id" javaType="User" select="getUser">
+            <result property="name" column="tname"/>
+        </association>
+    </resultMap>
+
+    <select id="listBlogTag" resultMap="BlogQueryMap">
+        select b.id,b.title,b.first_picture,
+        b.flag,b.view,b.description,b.published,
+        b.recommend,b.update_time,
+        b.type_id,b.user_id from yunblog.t_blog b,yunblog.t_type t,yunblog.t_user u
+        where
+        b.type_id = t.id
+        and b.user_id = u.id
+        and b.tag_ids like CONCAT('%',#{tagId},'%')
+
+    </select>
+
+    <select id="listBlogSearch" resultMap="BlogQueryMap">
+        <bind name="pattern" value="'%' + query + '%'" />
+        select b.id,b.title,b.first_picture,
+        b.flag,b.view,b.description,b.published,
+        b.recommend,b.update_time,
+        b.type_id,b.user_id
+        from yunblog.t_blog b, yunblog.t_type t,yunblog.t_user u
+        where b.type_id = t.id and  u.id = b.user_id and (b.title like #{pattern} or b.content like  #{pattern} or t.name like #{pattern} or b.description like #{pattern})
+        order by b.update_time desc
+    </select>
+
+    <update id="updateView" parameterType="long">
+        update yunblog.t_blog set view=view+1 where id=#{id}
+    </update>
+
+
+</mapper>

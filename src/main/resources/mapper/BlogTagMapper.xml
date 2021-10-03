@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yunblog.mapper.BlogTagMapper">
+
+
+    <insert id="insertBlogTag" parameterType="BlogTag">
+        insert into yunblog.t_blog_tags(blog_id,tags_id) values
+            (#{blogId},#{tagId});
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        delete from yunblog.t_blog_tags where blog_id=#{blogId};
+    </delete>
+
+    <select id="selectByBlogId" resultType="long" parameterType="long">
+        select tags_id from yunblog.t_blog_tags where blog_id=#{blogId};
+    </select>
+
+    <select id="listBlogTagId" resultType="BlogTag" parameterType="long">
+        select blog_id from yunblog.t_blog_tags where tags_id=#{tagsId};
+    </select>
+</mapper>
